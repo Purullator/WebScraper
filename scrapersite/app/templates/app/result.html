@@ -11,10 +11,77 @@
     
 </head>
 <body>
+  
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12 m-5">
+        <h1 class="text-center">The Scraper</h1>
+      </div>
+    </div>
+    <div class="row m-5">
+      <div class="col-md-4">
+        <form action="/" method="post">
+          {% csrf_token %}
+          <input class="form-control" type="text" id="site" placeholder="Enter site address" name="site">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary">Scrape</button>
+        </div>
+        </form>
+        <div class="col-md-6">
+          <a class="btn btn-warning" href="/delete">Delete</a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-4 fs-3">Name</div>
+      <div class="col-8 fs-3">Address</div>
+    </div>
     {% for link in data %}
-
-      {{link.name}} <i class="fa-solid fa-arrow-right"></i> {{link.address}}<br>
-
+      <div class="row mb-2 align-items-center">
+        <div class="col-4">{{ link.name }}</div>
+        <div class="col-8 d-flex align-items-center">
+          <span class="text-truncate">{{ link.address }}</span>
+          <button 
+            onclick="copyToClipboard('{{ link.address }}', this)" 
+            class="btn btn-outline-secondary btn-sm ms-2" 
+            data-bs-toggle="tooltip" 
+            data-bs-placement="top" 
+            title="Copy to clipboard"
+          >
+            <i class="fas fa-clipboard"></i>
+          </button>
+        </div>
+      </div>
     {% endfor %}
-</body>
+  </div>
+
+  <script>
+    function copyToClipboard(link, button) {
+      const el = document.createElement('textarea');
+      el.value = link;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+
+      // Show "Copied!" tooltip
+      const tooltip = bootstrap.Tooltip.getInstance(button);
+      tooltip.setContent({ '.tooltip-inner': 'Copied!' });
+      tooltip.show();
+
+      // Revert tooltip back to "Copy to clipboard" after 2 seconds
+      setTimeout(() => {
+        tooltip.setContent({ '.tooltip-inner': 'Copy to clipboard' });
+      }, 2000);
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+      // Initialize all tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+  </script>
 </html>
